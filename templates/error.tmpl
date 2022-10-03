@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Error</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+  </head>
+  <body class="container" style="margin-top: 50px">
+    <div class="card">
+      <div class="card-header">
+        Whoops!
+        <img src="/assets/img/marian.png" class="img-fluid" width="50" />
+      </div>
+      <div class="card-body">
+        {{ if .Message }}
+          {{ .Message }}
+        {{ end }}
+      </div>
+    </div>
+  </body>
+</html>

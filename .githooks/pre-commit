@@ -1,0 +1,58 @@
+#/bin/sh
+
+GOBASE="$(pwd)"
+BIN="$GOBASE"/.bin
+export GOBIN=$BIN
+
+GOIMPORTS=$BIN/goimports
+STATICKCHECK=$BIN/staticcheck
+
+if [[ ! -x "$STATICKCHECK" ]]; then
+  printf "\t\033[41mInstalling staticcheck...\033[0m (go install honnef.co/go/tools/cmd/staticcheck@latest)\n"
+  go install honnef.co/go/tools/cmd/staticcheck@latest
+fi
+
+$STATICKCHECK -tests=false ./...
+
+# Check for goimports
+if [[ ! -x "$GOIMPORTS" ]]; then
+  printf "\t\033[41mInstalling goimports...\033[0m (go install golang.org/x/tools/cmd/goimports)\n"
+  go install golang.org/x/tools/cmd/goimports@latest
+fi
+
+
+gopackages=$(git diff --cached --name-only --diff-filter=ACM | grep '.go$'| xargs -n1 dirname| sort -u| sed 's/^/.\//' )
+	echo $gopackages
+
+[ -z "$gopackages" ] && exit 0
+
+PASS=true
+
+
+for package in $gopackages; do
+	go vet $package
+	if [[ $? != 0 ]]; then
+		printf "\t\033[31mgo vet $package\033[0m \033[0;30m\033[41mFAILURE!\033[0m\n"
+		PASS=false
+	else
+		printf "\t\033[32mgo vet $package\033[0m \033[0;30m\033[42mpass\033[0m\n"
+	fi
+done
+
+unformatted=$($GOIMPORTS -l $gopackages 2>&1 )
+if [ -n "$unformatted" ] ; then
+		echo ""
+		echo "Running goimports"
+    for fn in $unformatted; do
+        goimports -w $fn
+				# "\t\033[32Formating $fn"
+				printf "\t\033[33mFormating $fn\033[0m \033[0;30m\033[42mOK\033[0m\n"
+        git add $fn
+    done
+fi
+
+
+if ! $PASS; then
+	exit 1
+fi
+

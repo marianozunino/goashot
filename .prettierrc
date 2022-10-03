@@ -1,0 +1,10 @@
+{
+  overrides: [
+    {
+      files: ["*.tmpl"],
+      options: {
+        parser: "go-template",
+      },
+    },
+  ],
+}

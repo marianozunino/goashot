@@ -1,0 +1,8 @@
+tmp
+.vscode
+dist
+.bin
+__debug*
+orders.json
+session.json
+bin

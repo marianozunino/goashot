@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Add Order</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+  </head>
+  <body class="container" style="margin-top: 50px">
+    {{ if .Message }}
+      <div class="alert alert-danger" role="alert">
+        {{ .Message }}
+      </div>
+    {{ end }}
+    <div class="card">
+      <div class="card-header">
+        Prepara tu
+        <img src="/assets/img/shaaaa.png" width="50" height="50" />
+      </div>
+      <div class="card-body">
+        <form action="/orders" method="post">
+          <div class="form-group">
+            <label>¿Pa quien es?</label>
+            <input
+              type="text"
+              class="form-control"
+              name="user"
+              autocomplete="off"
+            />
+          </div>
+          <div class="form-group">
+            <label>Tipo</label>
+            <select class="custom-select" name="orderType" id="orderType">
+              <option disabled selected>Seleccionar Tipo</option>
+              {{ range .Proteins }}
+                <option value="{{ .ID }}">{{ .Name }}</option>
+              {{ end }}
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Toppings</label>
+            {{ range .Toppings }}
+              <div class="form-check">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  name="toppings"
+                  value="{{ .ID }}"
+                  id="{{ .ID }}"
+                />
+                <label class="form-check-label" for="{{ .ID }}">
+                  {{ .Name }}
+                </label>
+              </div>
+            {{ end }}
+          </div>
+          <div class="form-group">
+            <input type="submit" class="btn btn-info" value="Add" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <title>Launch Scrapper</title>
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    />
+  </head>
+  <body class="container" style="margin-top: 50px">
+    {{ if .Message }}
+      <div class="alert alert-danger" role="alert">
+        {{ .Message }}
+      </div>
+    {{ end }}
+    <div class="card">
+      <div class="card-header">Place Orders</div>
+      <div class="card-body">
+        <form action="/scrapper" method="post">
+          <div class="form-group">
+            <input type="submit" class="btn btn-info" value="Place Order" />
+          </div>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
