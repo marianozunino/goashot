@@ -1,6 +1,8 @@
 package json
 
 import (
+	"sync"
+
 	"github.com/marianozunino/goashot/internal/model"
 )
 
@@ -13,6 +15,7 @@ type Repository interface {
 }
 
 type repository struct {
+	sync.Mutex
 	Database
 }
 
@@ -21,6 +24,7 @@ var _ Repository = (*repository)(nil)
 
 func registerRepository(db Database) Repository {
 	r := &repository{
+		sync.Mutex{},
 		db,
 	}
 	return r
@@ -40,14 +44,18 @@ func (r *repository) GetOrder(id int) *model.Order {
 }
 
 func (r *repository) AddOrder(order *model.Order) {
+	r.Lock()
 	defer r.persistOrders()
+	defer r.Unlock()
 
 	order.ID = r.getNewID()
 	r.orders = append(r.orders, order)
 }
 
 func (r *repository) UpdateOrder(order *model.Order) {
+	r.Lock()
 	defer r.persistOrders()
+	defer r.Unlock()
 
 	for i, o := range r.orders {
 		if o.ID == order.ID {
@@ -57,7 +65,9 @@ func (r *repository) UpdateOrder(order *model.Order) {
 }
 
 func (r *repository) DeleteOrder(id int) {
+	r.Lock()
 	defer r.persistOrders()
+	defer r.Unlock()
 
 	orders := make([]*model.Order, 0)
 	for i, order := range r.orders {
