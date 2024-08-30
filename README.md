@@ -1,43 +1,78 @@
 # Go Ashot
 
-This project is just a POC to learn about [Go Rod](https://go-rod.github.io/#/).
+Go Ashot is a Proof of Concept (POC) project that demonstrates the power of Go libraries and frameworks in creating a web application for automating food orders from Rappi.
 
-I also wanted to learn about [Go HTML Template](https://golang.org/pkg/html/template/) and
-combine it with [Gin](https://github.com/gin-gonic/gin).
+## 🚀 Project Overview
 
-All of this glue together with [Uber FX](https://github.com/uber-go/fx) DI framework.
+This project showcases the integration of modern web technologies and Go frameworks to create a seamless food ordering experience. It was built to explore and learn:
 
-To make it more fun and useful, I decided to use it to crawl [Rappi](https://rappi.com.uy) website to place some orders.
+- [Go Rod](https://go-rod.github.io/#/): A high-level Chrome DevTools Protocol driver for web automation
+- [HTMX](https://htmx.org/): A library for creating dynamic web applications without JavaScript
+- [templ](https://github.com/a-h/templ): A type-safe HTML templating language for Go
+- [Echo](https://echo.labstack.com/): A high-performance, extensible web framework for Go
+- [Cobra](https://github.com/spf13/cobra): A powerful library for creating modern CLI applications
 
-> Yeah, we are a bunch of lazy people at the office, and we love Shawarmas 🥙.
+> 💡 Inspiration: We're a group of Shawarma enthusiasts 🥙 at the office who decided to streamline our lunch ordering process!
 
-## How to use it
+## ✨ Features
 
-Build the project:
+- Intuitive web interface for CRUD operations on food orders
+- Automated crawler that places orders on Rappi based on web interface input
+- Seamless integration with Rappi's two-factor authentication (2FA) system
+- Robust data persistence layer for order management
+- Dynamic web interfaces powered by HTMX, eliminating the need for client-side JavaScript
+- Efficient and type-safe HTML templating with templ
+- Flexible command-line interface for configuration using Cobra
+
+## 🛠 Installation & Usage
+
+### Building the Project
 
 ```bash
 make build
 ```
 
-This will output two binaries, one for the server and another one for the crawler.
+This command generates a binary in the `bin` directory.
 
-Run it:
+### Running the Application
+
+Start the web server:
 
 ```bash
-./bin/app
-#or
-./bin/crawler
+./bin/app backoffice [-p 5000] [-a 0.0.0.0]
 ```
 
-It will start a web server on port 5000, so you can access it on http://localhost:5000.
+Launch the crawler:
 
-## How it works
+```bash
+./bin/app crawler [-p 5001] [-a 0.0.0.0]
+```
 
-The project is divided in two parts:
+Default ports are 5000 for the web server and 5001 for the crawler, both binding to `localhost`.
 
-- The web server, which is just a simple web server that serves some Go HTML templates.
-  With this web server, you can CRUD orders
+### Crawler Usage
 
-- The crawler, which read the orders that were created on the web server, and place them on Rappi.
-  Rappi has a 2FA, so it will take to the login page, and it will wait for you to complete the login process.
-  Once you are logged in, it will place the orders.
+1. The crawler navigates to the Rappi login page.
+2. Complete the login process manually, including 2FA if required.
+3. Once authenticated, the crawler automatically processes orders created through the web interface.
+
+## 📁 Project Structure
+
+```
+go-ashot/
+├── internal/
+│   ├── handlers/    # HTTP request handlers
+│   ├── models/      # Data structures and business logic
+│   ├── services/    # Business logic and external service integrations
+│   ├── templates/   # HTMX and templ UI components
+│   └── repository/  # Data persistence layer
+├── cmd/             # Command-line interface definitions
+```
+
+## 🛡️ License
+
+This project is open-source and available under the [MIT License](LICENSE).
+
+## 📞 Support
+
+None

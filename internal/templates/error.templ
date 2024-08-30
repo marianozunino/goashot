@@ -1,0 +1,22 @@
+package templates
+
+import "fmt"
+
+type AlertType string
+
+const (
+	AlertTypeError   AlertType = "danger"
+	AlertTypeSuccess AlertType = "success"
+	AlertTypeWarning AlertType = "warning"
+	AlertTypeInfo    AlertType = "info"
+)
+
+templ Alert(alertType AlertType, message string) {
+	<div id="alerts" hx-swap-oob="true">
+		if message != "" {
+			<div class={ fmt.Sprintf("alert alert-%s", alertType) } role="alert">
+				{ message }
+			</div>
+		}
+	</div>
+}

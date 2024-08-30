@@ -1,6 +1,8 @@
 package mapper
 
 import (
+	"log"
+
 	"github.com/marianozunino/goashot/internal/dto"
 	"github.com/marianozunino/goashot/internal/model"
 )
@@ -14,21 +16,24 @@ func OrderDtosToOrderModels(ordersDto []*dto.Order) []*model.Order {
 }
 func OrderDtoToOrderModel(orderDto *dto.Order) *model.Order {
 	var toppings []model.Topping
-	for _, topping := range orderDto.Toppings {
-		toppingName, err := dto.Toppings.GetToppingName(topping)
+	for _, toppingType := range orderDto.Toppings {
+		topping, err := dto.GetTopping(toppingType)
 		if err != nil {
+			log.Println(err)
 			continue
 		}
 		toppings = append(toppings, model.Topping{
-			ID:   string(topping),
-			Name: string(toppingName),
+			ID:   topping.ID,
+			Name: topping.Name,
 		})
 	}
-	return &model.Order{
+
+	result := &model.Order{
 		ID:        orderDto.ID,
 		OrderType: orderDto.OrderType,
 		Toppings:  toppings,
 		User:      orderDto.User,
 		IsActive:  orderDto.IsActive,
 	}
+	return result
 }

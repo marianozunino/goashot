@@ -1,0 +1,134 @@
+package templates
+
+import (
+	"fmt"
+	"github.com/marianozunino/goashot/internal/dto"
+)
+
+type OrderContext struct {
+	Order     *dto.Order
+	Shawarmas []dto.Shawarma
+	Toppings  []dto.Topping
+	IsEdit    bool
+}
+
+func isSelected(value dto.ToppingType, values []dto.ToppingType) bool {
+	for _, v := range values {
+		if v == value {
+			return true
+		}
+	}
+	return false
+}
+
+templ OrderForm(orderCtx OrderContext) {
+	<form>
+		<div class="form-group">
+			<label>Para quien?</label>
+			<input
+				type="text"
+				class="form-control"
+				autocomplete="off"
+				name="user"
+				id="user"
+				if orderCtx.IsEdit {
+					value={ orderCtx.Order.User }
+					readonly
+				}
+			/>
+		</div>
+		<div class="form-group">
+			<select class="custom-select" name="orderType" id="orderType">
+				for _, shawarma := range orderCtx.Shawarmas {
+					<option
+						value={ shawarma.ID.String() }
+						if orderCtx.Order != nil && orderCtx.Order.OrderType == shawarma.ID {
+							selected
+						}
+					>
+						{ shawarma.Name }
+					</option>
+				}
+			</select>
+		</div>
+		<div class="form-group">
+			for _, topping := range orderCtx.Toppings {
+				<div class="form-check">
+					<input
+						class="form-check-input"
+						type="checkbox"
+						name="toppings"
+						value={ topping.ID.String() }
+						id={ topping.Name }
+						if orderCtx.IsEdit {
+							if orderCtx.Order != nil && isSelected(topping.ID, orderCtx.Order.Toppings) {
+								checked
+							}
+						}
+					/>
+					<label class="form-check-label" for={ topping.Name }>
+						{ topping.Name }
+					</label>
+				</div>
+			}
+		</div>
+		{ children... }
+	</form>
+}
+
+templ formButtons(orderCtx OrderContext) {
+	<div class="form-group">
+		<a
+			hx-get={ string(templ.URL("/orders")) }
+			hx-target="body"
+			hx-swap="innerHTML"
+			hx-push-url="true"
+			class="btn btn-secondary"
+		>Back</a>
+		<a
+			href="/orders/edit"
+			class="btn btn-primary"
+			if orderCtx.IsEdit {
+				hx-put={ string(templ.URL(fmt.Sprintf("/orders/%d", orderCtx.Order.ID))) }
+				hx-type="submit"
+				hx-target="body"
+				hx-swap="none"
+			} else {
+				hx-post={ string(templ.URL("/orders")) }
+				hx-type="submit"
+				hx-swap="none"
+			}
+		>Save</a>
+		if orderCtx.IsEdit {
+			<a
+				class="btn btn-danger delete"
+				hx-delete={ string(templ.URL(fmt.Sprintf("/orders/%d?redirect=true", orderCtx.Order.ID))) }
+			>Delete</a>
+		}
+	</div>
+}
+
+templ editHeader(user string) {
+	Este <img src="/assets/img/shaaaa.png" width="50" height="50"/> pertenece a <b>{ user }</b>
+}
+
+templ newOrderHeader() {
+	Prepara tu <img src="/assets/img/shaaaa.png" width="50" height="50"/>
+}
+
+func getCardComponent(orderCtx OrderContext) templ.Component {
+	if orderCtx.IsEdit {
+		return editHeader(string(orderCtx.Order.User))
+	}
+	return newOrderHeader()
+}
+
+templ OrderPage(orderCtx OrderContext) {
+	@Layout() {
+		@Card(getCardComponent(orderCtx)) {
+			@OrderForm(orderCtx) {
+				@formButtons(orderCtx)
+			}
+		}
+	}
+}

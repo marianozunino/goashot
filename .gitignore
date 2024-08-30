@@ -6,3 +6,5 @@ __debug*
 orders.json
 session.json
 bin
+*_templ.go
+*_templ.txt

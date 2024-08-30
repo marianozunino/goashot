@@ -4,38 +4,31 @@ import (
 	"sync"
 
 	"github.com/marianozunino/goashot/internal/model"
+	"github.com/marianozunino/goashot/internal/service"
 )
 
-type Repository interface {
-	GetOrders() []*model.Order
-	GetOrder(id int) *model.Order
-	AddOrder(order *model.Order)
-	UpdateOrder(order *model.Order)
-	DeleteOrder(id int)
-}
-
-type repository struct {
+type Repository struct {
 	sync.Mutex
-	Database
+	db *Database
 }
 
 // assume that the repository implements the Repository interface
-var _ Repository = (*repository)(nil)
+var _ service.Repository = (*Repository)(nil)
 
-func registerRepository(db Database) Repository {
-	r := &repository{
+func NewRepository(db *Database) *Repository {
+	r := &Repository{
 		sync.Mutex{},
 		db,
 	}
 	return r
 }
 
-func (r *repository) GetOrders() []*model.Order {
-	return r.orders
+func (r *Repository) GetOrders() []*model.Order {
+	return r.db.orders
 }
 
-func (r *repository) GetOrder(id int) *model.Order {
-	for _, order := range r.orders {
+func (r *Repository) GetOrder(id int) *model.Order {
+	for _, order := range r.db.orders {
 		if order.ID == id {
 			return order
 		}
@@ -43,37 +36,41 @@ func (r *repository) GetOrder(id int) *model.Order {
 	return nil
 }
 
-func (r *repository) AddOrder(order *model.Order) {
+func (r *Repository) AddOrder(order *model.Order) (*model.Order, error) {
 	r.Lock()
-	defer r.persistOrders()
+	defer r.db.persistOrders()
 	defer r.Unlock()
 
-	order.ID = r.getNewID()
-	r.orders = append(r.orders, order)
+	order.ID = r.db.getNewID()
+	r.db.orders = append(r.db.orders, order)
+
+	return order, nil
 }
 
-func (r *repository) UpdateOrder(order *model.Order) {
+func (r *Repository) UpdateOrder(order *model.Order) (*model.Order, error) {
 	r.Lock()
-	defer r.persistOrders()
+	defer r.db.persistOrders()
 	defer r.Unlock()
 
-	for i, o := range r.orders {
+	for i, o := range r.db.orders {
 		if o.ID == order.ID {
-			r.orders[i] = order
+			r.db.orders[i] = order
 		}
 	}
+
+	return order, nil
 }
 
-func (r *repository) DeleteOrder(id int) {
+func (r *Repository) DeleteOrder(id int) {
 	r.Lock()
-	defer r.persistOrders()
+	defer r.db.persistOrders()
 	defer r.Unlock()
 
 	orders := make([]*model.Order, 0)
-	for i, order := range r.orders {
+	for i, order := range r.db.orders {
 		if order.ID == id {
-			orders = append(r.orders[:i], r.orders[i+1:]...)
+			orders = append(r.db.orders[:i], r.db.orders[i+1:]...)
 		}
 	}
-	r.orders = orders
+	r.db.orders = orders
 }

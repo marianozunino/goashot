@@ -6,9 +6,9 @@ import (
 )
 
 func OrderModelToOrderDto(orderModel *model.Order) *dto.Order {
-	var toppings []dto.ToppingKey
+	var toppings []dto.ToppingType
 	for _, topping := range orderModel.Toppings {
-		toppings = append(toppings, dto.ToppingKey(topping.ID))
+		toppings = append(toppings, dto.ToppingType(topping.ID))
 	}
 	return &dto.Order{
 		ID:        orderModel.ID,

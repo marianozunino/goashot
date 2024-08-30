@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Go  Ashot",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

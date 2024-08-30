@@ -1,5 +1,4 @@
-The MIT License (MIT)
-
+/*
 Copyright © 2024 Mariano Zunino <marianoz@posteo.net>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -19,3 +18,32 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
+*/
+package cmd
+
+import (
+	app "github.com/marianozunino/goashot/internal/app/web"
+	"github.com/spf13/cobra"
+)
+
+var port string
+var bindAddress string
+
+// backofficeCmd represents the backoffice command
+var backofficeCmd = &cobra.Command{
+	Use:   "backoffice",
+	Short: "",
+	Long:  ``,
+	Run: func(cmd *cobra.Command, args []string) {
+		app.NewBackofficeApp(
+			app.WithPort(port),
+			app.WithHost(bindAddress),
+		).Run()
+	},
+}
+
+func init() {
+	rootCmd.AddCommand(backofficeCmd)
+	backofficeCmd.Flags().StringVarP(&port, "port", "p", "5000", "backoffice port")
+	backofficeCmd.Flags().StringVarP(&bindAddress, "address", "a", "localhost", "backoffice bind address")
+}

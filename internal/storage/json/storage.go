@@ -6,27 +6,19 @@ import (
 	"os"
 
 	"github.com/marianozunino/goashot/internal/model"
-	"go.uber.org/fx"
 )
 
-var Module = fx.Options(
-	fx.Provide(registerRepository),
-	fx.Provide(registerDB),
-)
-
-type Database = *database
-
-func registerDB() Database {
-	db := &database{}
+func NewDB() *Database {
+	db := &Database{}
 	db.loadOrders()
 	return db
 }
 
-type database struct {
+type Database struct {
 	orders []*model.Order
 }
 
-func (db *database) getNewID() int {
+func (db *Database) getNewID() int {
 	maxID := 0
 	for _, order := range db.orders {
 		if order.ID > maxID {
@@ -37,7 +29,7 @@ func (db *database) getNewID() int {
 }
 
 // If any error occurs, the function returns an empty slice
-func (db *database) loadOrders() {
+func (db *Database) loadOrders() {
 	orders := make([]*model.Order, 0)
 
 	file, err := os.ReadFile("orders.json")
@@ -55,7 +47,7 @@ func (db *database) loadOrders() {
 	db.orders = orders
 }
 
-func (db *database) persistOrders() {
+func (db *Database) persistOrders() {
 	file, _ := json.MarshalIndent(db.orders, "", " ")
 	_ = os.WriteFile("orders.json", file, 0644)
 }

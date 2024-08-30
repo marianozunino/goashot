@@ -1,0 +1,25 @@
+proxy-timeout: 10s
+lint: false
+templier-host: "localhost:5001"
+print-js-debug-logs: true
+log: debug
+debounce:
+  templ: 50ms
+  go: 50ms
+tls: null
+app:
+  # app.dir-src-root defines the path to the Go module source root directory.
+  dir-src-root: ./
+  exclude:
+    - .*
+    - "*~"
+    - dist/*
+    - public/*
+    - bin/*
+    - cmd/crawler/*
+  dir-cmd: ./cmd/app/
+  dir-work: ./
+  host: http://localhost:5000
+  go-flags:
+  flags:
+custom-watchers:

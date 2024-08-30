@@ -1,0 +1,89 @@
+package templates
+
+templ css() {
+	<style type="text/css">
+        html, body {
+            height: 100%; /* Ensures the body takes the full height of the page */
+            margin: 0; /* Removes default margin */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1; /* Takes up available space and pushes footer down */
+        }
+
+        footer {
+            text-align: center;
+            margin-top: auto;
+            padding: 1rem;
+            background-color: #f1f1f1; /* Optional: Add background color for footer */
+        }
+	</style>
+}
+
+templ dang() {
+	<script>
+		    document.body.addEventListener('htmx:beforeOnLoad', function(evt) {
+			console.log(evt)
+			if (evt.detail.xhr.status === 422) {
+			    console.log('422')
+			    // allow 422 responses to swap as we are using this as a signal that
+			    // a form was submitted with bad data and want to rerender with the
+			    // errors
+			    //
+			    // set isError to false to avoid error logging in console
+			    evt.detail.shouldSwap = true;
+			    evt.detail.isError = false;
+			}
+		    });
+	</script>
+}
+
+templ footer() {
+	<footer class="text-center mb-4">
+		<p>Hecho con ❤️ para Marcelo El Inutil Ascarate</p>
+		<p>
+			Si algo no funciona, es culpa de Juan por pedirme que lo haga en PHP 🤮
+		</p>
+	</footer>
+}
+
+templ htmx() {
+	<script src="https://unpkg.com/htmx.org@2.0.2/dist/htmx.js" integrity="sha384-yZq+5izaUBKcRgFbxgkRYwpHhHHCpp5nseXp0MEQ1A4MTWVMnqkmcuFez8x5qfxr" crossorigin="anonymous"></script>
+}
+
+templ bootstrap() {
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+}
+
+templ Layout() {
+	<!DOCTYPE html>
+	<html lang="en">
+		<head>
+			<meta charset="utf-8"/>
+			<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+			<title>Order Management</title>
+			@css()
+			@bootstrap()
+			@htmx()
+		</head>
+		<body class="container" style="margin-top: 50px">
+			<div id="alerts" hx-swap="outerHTML"></div>
+			{ children... }
+		</body>
+		@footer()
+	</html>
+	@dang()
+}
+
+templ Card(header templ.Component) {
+	<div class="card" id="order-card">
+		<div class="card-header">
+			@header
+		</div>
+		<div class="card-body">
+			{ children... }
+		</div>
+	</div>
+}

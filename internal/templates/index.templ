@@ -1,0 +1,89 @@
+package templates
+
+import (
+	"fmt"
+	"github.com/marianozunino/goashot/internal/dto"
+)
+
+templ cardHeader() {
+	<ul class="nav nav-pills w-100">
+		<li class="nav-pill ml-auto">
+			<a
+				class="nav-link active"
+				hx-get="/orders/new"
+				hx-target="body"
+			>
+				<b>Add Order</b>
+				<img src="/assets/img/shaaaa.png" width="50" height="50"/>
+			</a>
+		</li>
+	</ul>
+}
+
+templ Index(orders []*dto.Order) {
+	@Layout() {
+		@Card(cardHeader()) {
+			<div class="card-body">
+				if len(orders) == 0 {
+					<p class="text-center">No Orders found!</p>
+				} else {
+					<table class="table">
+						<thead>
+							@tableColumns()
+						</thead>
+						<tbody>
+							for _, order := range orders {
+								@tableRow(order)
+							}
+						</tbody>
+					</table>
+				}
+			</div>
+		}
+	}
+}
+
+templ tableColumns() {
+	<tr>
+		<th scope="col" class="text-md-center">#</th>
+		<th scope="col" class="text-md-center">Para</th>
+		<th scope="col" class="text-md-center">Tipo</th>
+		<th width="200px" class="text-md-center">Action</th>
+	</tr>
+}
+
+templ tableRow(order *dto.Order) {
+	<tr>
+		<th scope="row" class="text-md-center">
+			<a href={ templ.URL(fmt.Sprintf("/orders/%d", order.ID)) }>{ fmt.Sprintf("%d", order.ID) } </a>
+		</th>
+		<td class="text-md-center">{ order.User }</td>
+		if val, err := dto.GetShawarma(order.OrderType); err != nil {
+			<td class="text-md-center">{ err.Error() }</td>
+		} else {
+			<td class="text-md-center">{ val.Name }</td>
+		}
+		<td>
+			<div class="d-block d-md-flex">
+				<a
+					class="btn btn-primary view mx-md-1 mx-0 mt-1 mt-sm-0"
+					hx-get={ string(templ.URL(fmt.Sprintf("/orders/%d", order.ID))) }
+					hx-target="body"
+					hx-swap="innerHTML"
+					hx-push-url="true"
+				>
+					View/Edit
+				</a>
+				<a
+					class="btn btn-danger delete mx-md-1 mx-0 mt-1 mt-md-0"
+					hx-confirm="Seguro que borramos esto? Es tuyo?\nNo dio el presupuesto para agregar validaciones 🙄"
+					hx-delete={ string(templ.URL(fmt.Sprintf("/orders/%d", order.ID))) }
+					hx-target="closest tr"
+					hx-swap="outerHTML"
+				>
+					Delete
+				</a>
+			</div>
+		</td>
+	</tr>
+}
